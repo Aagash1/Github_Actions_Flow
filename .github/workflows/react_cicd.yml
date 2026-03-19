@@ -59,4 +59,29 @@ jobs:
         run: |
           test -f dist/index.html
           echo "Build file exists"
-        
+   
+  deploy-to-azure:
+    runs-on: ubuntu-latest
+    needs: test
+
+    env:
+      AZURE_CONTAINER_REGISTRY: devopshorizon
+      RESOURCE_GROUP: 1-42e46d9a-playground-sandbox
+      CONTAINER_APP_NAME: devops-horizon-container-app
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: react-artifact-build
+          path: dist
+
+      - name: Log in to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
