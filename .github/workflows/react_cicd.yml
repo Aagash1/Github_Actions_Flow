@@ -1,0 +1,31 @@
+name: React CI CD Workflow
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+     - main
+
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      
+      - name: Install dependencies and build app
+        run: |
+          npm ci 
+          npm run build
+      
+      - name: Upload artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: react-artifact-build
+          path: ./dist
